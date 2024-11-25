@@ -24,35 +24,35 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function updateSentence() {
-        const difficulty = document.getElementById('difficulty').value.toLowerCase();
+        const difficulty = document.getElementById('difficulty').value;
         const typingText = document.getElementById('typingText');
+        const difficultyLabel = document.getElementById('difficultyLabel');
 
         let sentences;
-        if (difficulty === 'easy') {
+        if (difficulty === 'Easy') {
             sentences = easySentences;
-        } else if (difficulty === 'medium') {
+        } else if (difficulty === 'Medium') {
             sentences = mediumSentences;
-        } else if (difficulty === 'hard') {
+        } else if (difficulty === 'Hard') {
             sentences = hardSentences;
         }
 
         const randomIndex = Math.floor(Math.random() * sentences.length);
         typingText.textContent = sentences[randomIndex];
+        difficultyLabel.innerHTML = `<strong>Level:</strong> ${difficulty}`;
     }
 
     let startTime, endTime;
+    let testStarted = false;
 
     function startTest() {
-        startTime = new Date();
-        document.querySelector('.btn-primary').disabled = true;
-        document.querySelector('.btn-danger').disabled = false;
-        document.querySelector('.btn-secondary').disabled = true;
-
-        const textInput = document.querySelector('textarea');
-        textInput.value = ''; 
-        textInput.focus();  
-
-        updateSentence(); // Add this line to update the sentence
+        if (!testStarted) {
+            startTime = new Date();
+            document.querySelector('.btn-primary').disabled = true;
+            document.querySelector('.btn-danger').disabled = false;
+            document.querySelector('.btn-secondary').disabled = true;
+            testStarted = true;
+        }
     }
 
     function stopTest() {
@@ -62,12 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.btn-danger').disabled = true;
         document.querySelector('.btn-secondary').disabled = false;
         displayResults(timeTaken);
+        testStarted = false;
     }
 
     function displayResults(timeTaken) {
         document.querySelector('.results p:nth-child(3)').innerText = `Time: ${timeTaken.toFixed(2)}s`;
     }
 
-    document.querySelector('.btn-primary').addEventListener('click', startTest);
+    document.querySelector('.btn-primary').addEventListener('click', () => {
+        updateSentence();
+        const textInput = document.querySelector('textarea');
+        textInput.value = '';
+        textInput.focus();
+        testStarted = false;
+    });
+
     document.querySelector('.btn-danger').addEventListener('click', stopTest);
+
+    document.querySelector('textarea').addEventListener('input', startTest);
 });
