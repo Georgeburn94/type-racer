@@ -42,9 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         difficultyLabel.innerHTML = `<strong>Level:</strong> ${difficulty}`;
     }
 
-    let startTime, endTime;
-    let testStarted = false;
-
     function startTest() {
         if (!testStarted) {
             startTime = new Date();
@@ -69,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.results p:nth-child(3)').innerText = `Time: ${timeTaken.toFixed(2)}s`;
     }
 
+    document.getElementById('difficulty').addEventListener('change', updateSentence);
     document.querySelector('.btn-primary').addEventListener('click', () => {
         updateSentence();
         const textInput = document.querySelector('textarea');
@@ -78,6 +76,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector('.btn-danger').addEventListener('click', stopTest);
-
     document.querySelector('textarea').addEventListener('input', startTest);
 });
