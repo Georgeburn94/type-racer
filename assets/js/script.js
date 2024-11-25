@@ -43,13 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startTest() {
-        if (!testStarted) {
-            startTime = new Date();
-            document.querySelector('.btn-primary').disabled = true;
-            document.querySelector('.btn-danger').disabled = false;
-            document.querySelector('.btn-secondary').disabled = true;
-            testStarted = true;
-        }
+        startTime = new Date();
+        document.querySelector('.btn-primary').disabled = true;
+        document.querySelector('.btn-danger').disabled = false;
+        document.querySelector('.btn-secondary').disabled = true;
+
+        const textInput = document.querySelector('textarea');
+        textInput.value = ''; 
+        textInput.focus();  
+
+        updateSentence(); // Add this line to update the sentence
     }
 
     function stopTest() {
@@ -59,22 +62,34 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.btn-danger').disabled = true;
         document.querySelector('.btn-secondary').disabled = false;
         displayResults(timeTaken);
-        testStarted = false;
     }
 
     function displayResults(timeTaken) {
         document.querySelector('.results p:nth-child(3)').innerText = `Time: ${timeTaken.toFixed(2)}s`;
     }
 
-    document.getElementById('difficulty').addEventListener('change', updateSentence);
-    document.querySelector('.btn-primary').addEventListener('click', () => {
-        updateSentence();
-        const textInput = document.querySelector('textarea');
-        textInput.value = '';
-        textInput.focus();
-        testStarted = false;
-    });
+    function highlightText() {
+        const typingText = document.getElementById('typingText').textContent;
+        const typingArea = document.getElementById('typingArea').value;
+        const typingTextArray = typingText.split('');
+        const typingAreaArray = typingArea.split('');
 
+        let highlightedText = '';
+        for (let i = 0; i < typingTextArray.length; i++) {
+            if (typingAreaArray[i] === undefined) {
+                highlightedText += `<span>${typingTextArray[i]}</span>`;
+            } else if (typingTextArray[i] === typingAreaArray[i]) {
+                highlightedText += `<span style="color: blue;">${typingTextArray[i]}</span>`;
+            } else {
+                highlightedText += `<span style="color: red;">${typingTextArray[i]}</span>`;
+            }
+        }
+
+        document.getElementById('typingText').innerHTML = highlightedText;
+    }
+
+    document.getElementById('difficulty').addEventListener('change', updateSentence);
+    document.querySelector('.btn-primary').addEventListener('click', startTest);
     document.querySelector('.btn-danger').addEventListener('click', stopTest);
-    document.querySelector('textarea').addEventListener('input', startTest);
+    document.getElementById('typingArea').addEventListener('input', highlightText);
 });
