@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         "We promptly judged antique ivory buckles for the next prize. The buckles were from a bygone era. They were beautifully crafted and had intricate designs. The judges were impressed and had a difficult time choosing a winner."
     ];
 
+    let startTime, endTime, wpm;
+
     function updateSentence() {
         const difficulty = document.getElementById('difficulty').value;
         const typingText = document.getElementById('typingText');
@@ -57,15 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function stopTest() {
         endTime = new Date();
-        const timeTaken = (endTime - startTime) / 1000;
+        const timeTaken = (endTime - startTime) / 1000 / 60; // Convert to minutes
+        const wordsTyped = document.getElementById('typingArea').value.trim().split(/\s+/).length;
+        const wpm = wordsTyped / timeTaken;
         document.querySelector('.btn-primary').disabled = false;
         document.querySelector('.btn-danger').disabled = true;
         document.querySelector('.btn-secondary').disabled = false;
-        displayResults(timeTaken);
+        displayResults(timeTaken, wpm);
     }
 
-    function displayResults(timeTaken) {
-        document.querySelector('.results p:nth-child(3)').innerText = `Time: ${timeTaken.toFixed(2)}s`;
+    function displayResults(timeTaken, wpm) {
+        document.querySelector('.results p:nth-child(3)').innerText = `Time: ${(timeTaken * 60).toFixed(2)}s`; // Convert back to seconds for display
+        document.querySelector('.results p:nth-child(4)').innerText = `WPM: ${wpm.toFixed(2)}`;
     }
 
     function highlightText() {
@@ -88,8 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('typingText').innerHTML = highlightedText;
     }
 
+    function preventBackspace(event) {
+        if (event.key === 'Backspace') {
+            event.preventDefault();
+        }
+    }
+
     document.getElementById('difficulty').addEventListener('change', updateSentence);
     document.querySelector('.btn-primary').addEventListener('click', startTest);
     document.querySelector('.btn-danger').addEventListener('click', stopTest);
     document.getElementById('typingArea').addEventListener('input', highlightText);
+    document.getElementById('typingArea').addEventListener('keydown', preventBackspace);
 });
